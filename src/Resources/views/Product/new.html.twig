@@ -1,0 +1,9 @@
+<a href="{{ path('logout') }}">Logout</a>
+
+<div class="messages">
+    {% if success %}
+        <strong>Product added!</strong>
+    {% endif %}
+</div>
+
+{{ form(form, {'attr': {'novalidate': 'novalidate'}}) }}
