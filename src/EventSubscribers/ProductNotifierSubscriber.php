@@ -26,6 +26,13 @@ class ProductNotifierSubscriber implements EventSubscriberInterface
     private $mailer;
 
     /**
+     * Twig.
+     *
+     * @var \Twig_Environment
+     */
+    private $twig;
+
+    /**
      * Recipients to notify after product creation.
      *
      * @var array
@@ -37,8 +44,9 @@ class ProductNotifierSubscriber implements EventSubscriberInterface
      *
      * @param \Swift_Mailer $mailer
      */
-    public function __construct(\Swift_Mailer $mailer)
+    public function __construct(\Twig_Environment $twig, \Swift_Mailer $mailer)
     {
+        $this->twig = $twig;
         $this->mailer = $mailer;
     }
 
@@ -61,12 +69,12 @@ class ProductNotifierSubscriber implements EventSubscriberInterface
      */
     public function onProductCreated(ProductCreatedEvent $productCreatedEvent): void
     {
-        $message = (new \Swift_Message('Hello Email'))
+        $message = (new \Swift_Message('New product notification!'))
             ->setFrom('send@example.com') //@todo consider moving to swiftmailer.yaml
             ->setTo($this->newProductRecipients)
             ->setBody(
-                $this->renderView(
-                    'templates/emails/registration.html.twig',
+                $this->twig->render(
+                    'emails/product.created.notification.html.twig',
                     array('name' => $productCreatedEvent->getProduct()->getName())
                 ),
                 'text/html'
